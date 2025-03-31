@@ -77,7 +77,11 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates(group.toString(), "fibonacci", version.toString())
+    coordinates(
+        groupId = group.toString(),
+        artifactId = "calendar-android",
+        version = "3.0.1"
+    )
 
     pom {
         name = "calendar-android"
