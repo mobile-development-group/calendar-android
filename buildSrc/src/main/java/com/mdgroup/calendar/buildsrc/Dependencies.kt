@@ -21,8 +21,8 @@ sealed class Plugins(val id: String, val version: String) {
     object KotlinCompose : Plugins(id = "org.jetbrains.kotlin.plugin.compose", version = "2.1.0")
 
     object Library : Plugins(id = "com.android.library", version = "8.1.1")
-    
-    object MavenPublish : Plugins(id = "com.vanniktech.maven.publish", version = "0.28.0")
+
+    object MavenPublish : Plugins(id = "com.vanniktech.maven.publish", version = "0.30.0")
 
     object NMCP : Plugins(id = "com.gradleup.nmcp", version = "0.0.7")
 }

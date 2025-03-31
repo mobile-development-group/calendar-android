@@ -1,9 +1,10 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     id(Plugins.Library.id)
     id(Plugins.KotlinAndroid.id)
     id(Plugins.KotlinCompose.id)
     id(Plugins.MavenPublish.id)
-    id(Plugins.NMCP.id)
 }
 
 android {
@@ -69,4 +70,38 @@ dependencies {
     implementation(Libs.Compose.uiToolingPreview)
 
     testImplementation(Libs.Core.Test.junit)
+}
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+    signAllPublications()
+
+    coordinates(group.toString(), "fibonacci", version.toString())
+
+    pom {
+        name = "calendar-android"
+        description = "A calendar for Jetpack Compose"
+        inceptionYear = "2025"
+        url = "https://github.com/mobile-development-group/calendar-android"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "mobile-development-group"
+                name = "Pavlo Kravchenko"
+                url = "https://github.com/mobile-development-group"
+            }
+        }
+        scm {
+            url = "https://github.com/mobile-development-group/calendar-android"
+            connection = "scm:git:git://github.com/mobile-development-group/calendar-android.git"
+            developerConnection = "scm:git:ssh://git@github.com/mobile-development-group/calendar-android.git"
+        }
+    }
 }
