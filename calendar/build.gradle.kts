@@ -78,7 +78,7 @@ mavenPublishing {
     signAllPublications()
 
     coordinates(
-        groupId = group.toString(),
+        groupId = "io.github.mobile-development-group",
         artifactId = "calendar-android",
         version = "3.0.1"
     )
