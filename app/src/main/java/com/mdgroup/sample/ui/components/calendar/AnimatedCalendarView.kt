@@ -2,12 +2,13 @@ package com.mdgroup.sample.ui.components.calendar
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.mdgroup.lib.calendar.data.DateRange
 import com.mdgroup.sample.ui.components.animations.SlideVerticalAnimationVisibility
 import com.mdgroup.sample.ui.theme.CalendarThemePreview
 import java.time.LocalDate
 
 @Composable
-fun CalendarView(
+fun AnimatedCalendarView(
     isVisible: Boolean,
     isPeriod: Boolean,
     selected: DateRange = DateRange(),
@@ -35,7 +36,7 @@ fun CalendarView(
 @Composable
 fun CalendarViewPreview() {
     CalendarThemePreview {
-        CalendarView(
+        AnimatedCalendarView(
             isVisible = true,
             isPeriod = true,
             onCloseClick = {},

@@ -1,9 +1,10 @@
 package com.mdgroup.sample.ui.components.calendar
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,8 +12,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,11 +25,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mdgroup.lib.calendar.compose.rememberCalendarState
-import com.mdgroup.lib.calendar.core.DayPosition
-import com.mdgroup.lib.calendar.core.daysOfWeek
-import com.mdgroup.lib.calendar.core.yearMonth
-import com.mdgroup.lib.calendar.view.VerticalCalendar
+import com.mdgroup.lib.calendar.data.CalendarDefaults
+import com.mdgroup.lib.calendar.data.DateRange
+import com.mdgroup.lib.calendar.view.CalendarMonths
+import com.mdgroup.lib.calendar.view.CalendarYears
 import com.mdgroup.sample.ui.components.AppButton
 import com.mdgroup.sample.ui.components.calendar.CalendarConstants.DEFAULT_CALENDAR_MAX_DATE
 import com.mdgroup.sample.ui.components.calendar.CalendarConstants.DEFAULT_CALENDAR_MIN_DATE
@@ -38,7 +36,6 @@ import com.mdgroup.sample.ui.components.picker.Picker
 import com.mdgroup.sample.ui.theme.CalendarThemePreview
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.YearMonth
 
 @Composable
 internal fun CalendarContent(
@@ -78,12 +75,22 @@ internal fun CalendarContent(
                 onSelectedChanged = onSelectedChanged
             )
         } else {
-            CalendarDayContent(
+            CalendarMonths(
+                modifier = Modifier.padding(all = 16.dp),
                 selected = selected,
                 minDate = minDay,
                 maxDate = maxDay,
+                isPeriod = false,
                 blockedDates = blockedDates,
-                onSelectedChanged = onSelectedChanged
+                colors = CalendarDefaults.calendarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                    itemIntermediateContainerColor = MaterialTheme.colorScheme.surface,
+                    itemSelectedContainerColor = MaterialTheme.colorScheme.primary
+                ),
+                onSelectedChanged = onSelectedChanged,
+                monthHeader = { month ->
+                    MonthHeaderView(month)
+                }
             )
         }
     }
@@ -121,23 +128,45 @@ private fun CalendarPeriodContent(
                 state = pagerState
             ) { index ->
                 when (index) {
-                    0 -> CalendarYears(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        selection = monthsDateSelection,
-                        minDate = minDate,
-                        maxDate = maxDate,
-                        onSelectedChanged = {
-                            monthsDateSelection = it
-                        }
-                    )
+                    0 -> Column {
+                        CalendarYears(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            selection = monthsDateSelection,
+                            minDate = minDate,
+                            maxDate = maxDate,
+                            colors = CalendarDefaults.calendarColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                itemIntermediateContainerColor = MaterialTheme.colorScheme.surface,
+                                itemSelectedContainerColor = MaterialTheme.colorScheme.primary
+                            ),
+                            itemBorder = BorderStroke(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.surface
+                            ),
+                            onSelectedChanged = {
+                                monthsDateSelection = it
+                            }
+                        )
+                        // For correct visible after switch calendar type
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
 
                     1 -> CalendarMonths(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         selected = daysDateSelection,
                         minDate = minDate,
                         maxDate = maxDate,
+                        isPeriod = true,
+                        colors = CalendarDefaults.calendarColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            itemIntermediateContainerColor = MaterialTheme.colorScheme.surface,
+                            itemSelectedContainerColor = MaterialTheme.colorScheme.primary
+                        ),
                         onSelectedChanged = {
                             daysDateSelection = it
+                        },
+                        monthHeader = { month ->
+                            MonthHeaderView(month)
                         }
                     )
                 }
@@ -159,70 +188,6 @@ private fun CalendarPeriodContent(
     }
 }
 
-@Composable
-private fun CalendarDayContent(
-    selected: DateRange,
-    minDate: LocalDate,
-    maxDate: LocalDate,
-    blockedDates: List<LocalDate> = emptyList(),
-    onSelectedChanged: (DateRange) -> Unit
-) {
-    var currentMonth by remember { mutableStateOf(YearMonth.now()) }
-    var dayDateSelection by remember { mutableStateOf(selected) }
-    val daysOfWeek = remember { daysOfWeek() }
-
-    val state = rememberCalendarState(
-        startMonth = minDate.yearMonth,
-        endMonth = maxDate.yearMonth,
-        firstVisibleMonth = currentMonth,
-        firstDayOfWeek = daysOfWeek.first(),
-    )
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-    ) {
-        Card(
-            shape = MaterialTheme.shapes.large,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-            modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 76.dp)
-                .fillMaxWidth()
-        ) {
-            VerticalCalendar(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                state = state,
-                contentPadding = PaddingValues(bottom = 100.dp),
-                dayContent = { value ->
-                    DayView(
-                        day = value,
-                        maxDate = maxDate,
-                        minDate = minDate,
-                        blockedDates = blockedDates,
-                        selected = dayDateSelection,
-                    ) { day ->
-                        if (day.position == DayPosition.MonthDate) {
-                            dayDateSelection = DateRange(day.date)
-                        }
-                    }
-                },
-                monthHeader = { month ->
-                    MonthHeaderView(month)
-                }
-            )
-        }
-
-        AppButton(
-            modifier = Modifier
-                .padding(bottom = 16.dp, start = 16.dp, end = 16.dp)
-                .align(Alignment.BottomCenter),
-            text = "Select",
-            onClick = { onSelectedChanged(dayDateSelection) }
-        )
-    }
-}
-
 @Preview
 @Composable
 private fun CalendarContentPreview() {
@@ -234,6 +199,50 @@ private fun CalendarContentPreview() {
                 endDate = LocalDate.now().minusDays(7)
             ),
             onCloseClick = {},
+            onSelectedChanged = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CalendarYearsPreview() {
+    CalendarThemePreview {
+        CalendarYears(
+            minDate = LocalDate.now().minusMonths(12),
+            maxDate = LocalDate.now().plusMonths(6),
+            selection = DateRange(LocalDate.now().minusMonths(6), LocalDate.now()),
+            colors = CalendarDefaults.calendarColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                itemIntermediateContainerColor = MaterialTheme.colorScheme.surface,
+                itemSelectedContainerColor = MaterialTheme.colorScheme.primary
+            ),
+            itemBorder = BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.surface
+            ),
+            onSelectedChanged = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CalendarMonthsPreview() {
+    CalendarThemePreview {
+        CalendarMonths(
+            minDate = LocalDate.now().minusMonths(1),
+            maxDate = LocalDate.now().plusMonths(1),
+            isPeriod = false,
+            selected = DateRange(
+                startDate = LocalDate.now().minusDays(20),
+                endDate = LocalDate.now().minusDays(7)
+            ),
+            colors = CalendarDefaults.calendarColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                itemIntermediateContainerColor = MaterialTheme.colorScheme.surface,
+                itemSelectedContainerColor = MaterialTheme.colorScheme.primary
+            ),
             onSelectedChanged = {}
         )
     }

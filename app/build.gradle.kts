@@ -59,8 +59,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":calendar"))
-
     // For minSdk < 26
     coreLibraryDesugaring(Libs.Core.deSugar)
 
@@ -86,6 +84,11 @@ dependencies {
 
     implementation(Libs.Compose.uiTooling)
     implementation(Libs.Compose.uiToolingPreview)
+
+    // Local
+    implementation(project(":calendar"))
+    // Remote
+    // implementation("io.github.mobile-development-group:calendar-android:3.0.1")
 
     testImplementation(Libs.Core.Test.junit)
 

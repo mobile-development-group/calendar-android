@@ -1,9 +1,10 @@
-package com.mdgroup.sample.ui.components.calendar
+package com.mdgroup.lib.calendar.utils
 
 import com.mdgroup.lib.calendar.core.atStartOfMonth
 import com.mdgroup.lib.calendar.core.nextMonth
 import com.mdgroup.lib.calendar.core.previousMonth
 import com.mdgroup.lib.calendar.core.yearMonth
+import com.mdgroup.lib.calendar.data.DateRange
 import java.time.LocalDate
 import java.time.YearMonth
 
