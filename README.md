@@ -115,6 +115,9 @@ For customization use `CalendarDefaults.calendarColors()`:
 `intermediateTextColor` - color of text in intermediate (range-selected) items  
 `disabledTextColor` - color of text in disabled items
 
+## Note
+Please write to me if you find any errors
+
 ## License
 
 This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) file for details.
