@@ -80,7 +80,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.mobile-development-group",
         artifactId = "calendar-android",
-        version = "3.0.1"
+        version = "3.0.3"
     )
 
     pom {
